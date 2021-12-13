@@ -1,6 +1,3 @@
-library(shiny)
-library(shiny)
-library(ggplot2)
 library(Lahman)
 library(dplyr)
 library(tidyverse)
@@ -37,9 +34,9 @@ hofe$HoF <- ifelse(hofe$HoF.x == 1,1)
 hofe[is.na(hofe)] <- 0
 hofe <- hofe[,c("playerID","HoF")]
 
-batting <- Batting %>% group_by(playerID) %>% summarize(G = sum(G), AB = sum(AB), R = sum(R), H = sum(H), X2B = sum(X2B), X3B = sum(X3B), HR = sum(HR),
-                                                        RBI = sum(RBI), SB = sum(SB), CS = sum(CS), BB = sum(BB), SO = sum(SO),IBB = sum(IBB), HBP = sum(HBP),
-                                                        SH = sum(SH), SF = sum(SF), GIDP = sum(GIDP), seasons = n(),last = max(yearID))
+batting <- Batting %>% group_by(playerID) %>% summarize(G = sum(G), AB = sum(AB), R = sum(R), H = sum(H), X2B = sum(X2B), X3B = sum(X3B), HR = sum(HR), RBI = sum(RBI),
+                                                        SB = sum(SB), CS = sum(CS), BB = sum(BB), SO = sum(SO),IBB = sum(IBB), HBP = sum(HBP), SH = sum(SH), SF = sum(SF), 
+                                                        GIDP = sum(GIDP), seasons = n(),last = max(yearID))
 
 stats <- battingStats(data = batting, idvars = c("playerID","last","seasons"))
 stats[is.na(stats)] <- 0
@@ -54,9 +51,8 @@ ASGcounts <- AllstarFull %>% group_by(playerID) %>% summarize(ASG = n())
 #eligible <- merge(eligible, awardCounts, by = "playerID", all.x = T, all.y = F)
 #eligible[is.na(eligible)] <- 0
 
-position <- Appearances %>% group_by(playerID) %>% summarize(G = sum(G_all), P = sum(G_p), first = sum(G_1b), second = sum(G_2b), third = sum(G_3b),
-                                                             short = sum(G_ss), left = sum(G_lf), center = sum(G_cf), right = sum(G_rf), out = sum(G_of),
-                                                             dh = sum(G_dh), catch = sum(G_c))
+position <- Appearances %>% group_by(playerID) %>% summarize(G = sum(G_all), P = sum(G_p), first = sum(G_1b), second = sum(G_2b), third = sum(G_3b), short = sum(G_ss),
+                                                             left = sum(G_lf), center = sum(G_cf), right = sum(G_rf), out = sum(G_of), dh = sum(G_dh), catch = sum(G_c))
 
 position[is.na(position)] <- 0
 
@@ -89,7 +85,7 @@ eligible <- eligible[!is.na(eligible$pitcher),]
 # <- merge(eligible,hof,by = "playerID",all.x = T, all.y = F)
 eligible[is.na(eligible)] <- 0
 
-drops <- c("pitcher")
+drops <- c("last","pitcher")
 
 hofData <- eligible[ , !(names(eligible) %in% drops)]
 
@@ -97,6 +93,8 @@ hofData$HoF <- ifelse(hofData$HoF == 1, "Inducted", "Not Inducted")
 
 hofData$HoF <- as.factor(hofData$HoF)
 hofData <- hofData[!(hofData$seasons < 10),]
+
+
 
 noPlayers <- hofData[,-1]
 rownames(noPlayers) <- hofData[,1]
@@ -121,3 +119,6 @@ noLastTrim$SO <- NULL
 noLastTrim$seasons <- NULL
 noLastTrim$BA <- NULL
 noLastTrim$BABIP <- NULL
+
+#write.csv(hofData,"C:/Users/pr057390/OneDrive - Cerner Corporation/Documents/Personal/Grad_school/824/week10/hofData.csv", row.names = F)
+

@@ -3,3 +3,4 @@
 
 hallOfFameDashboard.R holds the code for the UI and server.  There is also an R file for just the required code which can be found at hallOfFameDataset.R
 
+The data tables used are all found in the R package "Lahman", so no csv, text file, etc. will need to be downloaded to run the dashboard.

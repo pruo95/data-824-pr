@@ -1,12 +1,3 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(shiny)
 library(ggplot2)
@@ -22,7 +13,6 @@ library(shiny)
 library(ggplot2)
 library(caret)
 library(nnet)
-
 
 ### original data scraping to get the proper datatable
 
@@ -53,15 +43,9 @@ batting <- Batting %>% group_by(playerID) %>% summarize(G = sum(G), AB = sum(AB)
 stats <- battingStats(data = batting, idvars = c("playerID","last","seasons"))
 stats[is.na(stats)] <- 0
 
-#eligible <- stats[stats$seasons >= 10,]
-#eligible <- eligible[eligible$last <= 2012,]
-
 awardCounts <- AwardsPlayers %>% group_by(playerID) %>% summarize(awards = n())
 
 ASGcounts <- AllstarFull %>% group_by(playerID) %>% summarize(ASG = n())
-
-#eligible <- merge(eligible, awardCounts, by = "playerID", all.x = T, all.y = F)
-#eligible[is.na(eligible)] <- 0
 
 position <- Appearances %>% group_by(playerID) %>% summarize(G = sum(G_all), P = sum(G_p), first = sum(G_1b), second = sum(G_2b), third = sum(G_3b),
                                                              short = sum(G_ss), left = sum(G_lf), center = sum(G_cf), right = sum(G_rf), out = sum(G_of),
@@ -95,7 +79,6 @@ eligible <- eligible[eligible$pitcher == 0,]
 
 eligible <- eligible[!is.na(eligible$pitcher),]
 
-# <- merge(eligible,hof,by = "playerID",all.x = T, all.y = F)
 eligible[is.na(eligible)] <- 0
 
 drops <- c("pitcher")
@@ -132,6 +115,7 @@ noLastTrim$BA <- NULL
 noLastTrim$BABIP <- NULL
 
 dataset <- noPlayers
+
 ################
 # Define UI for application that draws a histogram
 ui <- navbarPage("R Shiny Dashboard",
@@ -201,11 +185,6 @@ ui <- navbarPage("R Shiny Dashboard",
                               
                               headerPanel("Logistic Regression Model"),
                               
-                              #sidebarPanel(
-                              #    
-                              #    selectInput('tsy', 'Y', names(dataset[,-1]), names(dataset[,-1])[[2]]),
-                              #),
-                              
                               mainPanel(
                                   h2("Summary of the Final Logistic Regression Model"),
                                   verbatimTextOutput("model"),
@@ -271,10 +250,6 @@ server <- function(input, output) {
         if (input$color != 'None')
             p <- p + aes_string(color=input$color)
         
-        #facets <- paste(input$facet_row, '~', input$facet_col)
-        #if (facets != '. ~ .')
-        #    p <- p + facet_grid(facets)
-        
         if (input$jitter)
             p <- p + geom_jitter()
         if (input$smooth)
@@ -338,9 +313,7 @@ server <- function(input, output) {
     ### Predict
     
     predsSlider <- reactive({
-        #data.frame(Name = c("AB","R","H","X2B","X3B","RBI","BB","HBP","SH","SlugPct","OBP","ASG","awards"),
-        #           Value = as.character(c(input$pAB, input$pR, input$pH, input$pX2B, input$pX3B, input$pRBI, input$pBB, input$pHBP, input$pSH, input$pSlugPct,
-        #                                  input$pOBP, input$pASG, input$pawards)))
+        
         data.frame(AB = as.numeric(input$pAB),
                    R = as.numeric(input$pR),
                    H = as.numeric(input$pH),
@@ -357,15 +330,7 @@ server <- function(input, output) {
         )
     })
     
-    #classSlider <- reactive({
-    #    data.frame(Induction_Odds = 1- predict(model, predsSlider(), type = "response"))
-    #})
-    #classSlider <- ifelse(classSlider > 0.5, "Not Inducted", "Inducted")
-    #classSlider <- as.factor(classSlider)
-    
     output$pred <- renderTable({
-        #classSlider
-        #predsSlider()
         data.frame(Induction_Odds = 1- predict(model, predsSlider(), type = "response")) # since the base is 
     })
     
